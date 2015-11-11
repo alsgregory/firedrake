@@ -4,11 +4,7 @@ import re
 import argparse
 from collections import defaultdict
 
-# (fancy) plotting stuff
 import numpy as np
-import matplotlib.pyplot as plt
-import brewer2mpl
-import matplotlib.ticker as ticker
 
 from pyop2.mpi import MPI
 from pyop2.profiling import summary
@@ -112,6 +108,10 @@ def output_time(start, end, **kwargs):
 
 
 def plot():
+    # (fancy) plotting stuff
+    import matplotlib.pyplot as plt
+    import brewer2mpl
+    import matplotlib.ticker as ticker
 
     def mode_as_str(num_procs, num_threads):
         if num_procs == 1 and num_threads == 1:
