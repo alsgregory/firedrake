@@ -101,6 +101,7 @@ else:
     args.package_manager = False
     args.minimal_petsc = False
     args.rebuild_script = False
+    args.disable_ssh = False
     args.mpicc = False
 
 
@@ -252,6 +253,9 @@ def list_cloned_dependencies(name):
     for dep in open(name + "/requirements-git.txt", "r"):
         name, _ = split_requirements_url(dep.strip())
         deps.append(name)
+        # Clone any new dependencies.
+        if not os.path.exists(name):
+            git_clone(dep)
     return deps
 
 
@@ -396,7 +400,7 @@ def build_update_script():
         update_script = f.read()
 
     for switch in ["developer", "user", "system", "sudo", "prefix", "package_manager", "minimal_petsc",
-                   "mpicc"]:
+                   "mpicc", "disable_ssh"]:
         update_script = update_script.replace("args.%s = False" % switch,
                                               "args.%s = %r" % (switch, args.__getattribute__(switch)))
     try:
