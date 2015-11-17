@@ -69,8 +69,9 @@ parameters.add(pyop2_opts)
 ffc_parameters = default_parameters()
 ffc_parameters['write_file'] = False
 ffc_parameters['format'] = 'pyop2'
-ffc_parameters['representation'] = 'quadrature'
-ffc_parameters['pyop2-ir'] = True
+ffc_parameters['representation'] = 'uflacs'
+ffc_parameters['pyop2-ir'] = False
+ffc_parameters['optimize'] = False
 parameters.add(Parameters("form_compiler", **ffc_parameters))
 
 parameters["reorder_meshes"] = True
