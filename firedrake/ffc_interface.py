@@ -197,8 +197,7 @@ class FFCKernel(DiskCached):
                 # Set optimization options
                 opts = default_parameters["coffee"]
                 _kernel = kernel if not parameters.get("assemble_inverse", False) else _inverse(kernel)
-                kernels.append((Kernel(Root(incl + [_kernel]), '%s_%s_integral_0_%s' %
-                                       (name, it.integral_type(), it.subdomain_id()), opts, inc),
+                kernels.append((Kernel(Root(incl + [_kernel]), _kernel.name, opts, inc),
                                 needs_orientations))
             self.kernels = tuple(kernels)
             self._empty = False
