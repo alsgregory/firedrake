@@ -11,7 +11,7 @@ import tempfile
 import ufl
 from ufl import Form, MixedElement, as_vector
 from ufl.measure import Measure
-from ufl.algorithms import compute_form_data, ReuseTransformer
+from ufl.algorithms import compute_form_data, ReuseTransformer, extract_coefficients
 from ufl.constantvalue import Zero
 from firedrake.ufl_expr import Argument
 
@@ -258,6 +258,10 @@ def compile_form(form, name, parameters=None, inverse=False):
     # need compute_form_data since we use preproc. form integrals later
     fd = compute_form_data(form)
 
+    def get_coeffs(fd, it):
+        if parameters["representation"] == "uflacs":
+            return extract_coefficients(it)
+        return fd.preprocessed_form.coefficients()
     # If there is no mixed element involved, return the kernels FFC produces
     # Note: using type rather than isinstance because UFL's VectorElement,
     # TensorElement and OPVectorElement all inherit from MixedElement
@@ -265,7 +269,7 @@ def compile_form(form, name, parameters=None, inverse=False):
         kernels = [((0, 0),
                     it.integral_type(), it.subdomain_id(),
                     it.ufl_domain().coordinates,
-                    fd.preprocessed_form.coefficients(), needs_orientations, kernel)
+                    get_coeffs(fd, it), needs_orientations, kernel)
                    for it, (kernel, needs_orientations) in zip(fd.preprocessed_form.integrals(),
                                                                FFCKernel(form, name,
                                                                          parameters).kernels)]
@@ -283,12 +287,13 @@ def compile_form(form, name, parameters=None, inverse=False):
             ((kernel, needs_orientations), ) = ffc_kernel.kernels
             # need compute_form_data here to get preproc integrals
             fd = compute_form_data(f)
+            assert len(fd.preprocessed_form.integrals()) == 1
             it = fd.preprocessed_form.integrals()[0]
             kernels.append(((i, j),
                             it.integral_type(),
                             it.subdomain_id(),
                             it.ufl_domain().coordinates,
-                            fd.preprocessed_form.coefficients(),
+                            get_coeffs(fd, it),
                             needs_orientations, kernel))
     form._cache["firedrake_kernels"] = (kernels, parameters)
     return kernels
