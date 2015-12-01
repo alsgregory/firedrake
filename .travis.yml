@@ -22,7 +22,6 @@ addons:
         - libblas-dev
         - liblapack-dev
         - gfortran
-        - libspatialindex-dev
         - swig
 env:
   global:

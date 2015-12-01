@@ -764,10 +764,7 @@ def make_c_evaluate(function, c_name="evaluate", ldargs=None):
                         kernel_name="evaluate_kernel",
                         wrapper_name="wrap_evaluate")
 
-    with open(path.join(path.dirname(__file__), "locate.cpp")) as f:
+    with open(path.join(path.dirname(__file__), "locate.c")) as f:
         src += f.read()
 
-    if ldargs is None:
-        ldargs = []
-    ldargs += ["-lspatialindex"]
-    return compilation.load(src, "cpp", c_name, cppargs=["-I%s" % path.dirname(__file__)], ldargs=ldargs)
+    return compilation.load(src, "c", c_name, cppargs=["-I%s" % path.dirname(__file__)])
